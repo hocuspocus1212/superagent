@@ -6,7 +6,7 @@ from typing import AsyncIterable
 import segment.analytics as analytics
 from agentops.langchain_callback_handler import AsyncLangchainCallbackHandler
 from decouple import config
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 
 from app.models.request import (
@@ -178,170 +178,145 @@ async def invoke(
     api_user=Depends(get_current_api_user),
 ):
     """Endpoint for invoking a specific workflow"""
-    if SEGMENT_WRITE_KEY:
-        analytics.track(api_user.id, "Invoked Workflow")
+    try:
+        if SEGMENT_WRITE_KEY:
+            # Assuming analytics is defined and set up elsewhere
+            analytics.track(api_user.id, "Invoked Workflow")
+        
+        workflow_data = await prisma.workflow.find_unique(
+            where={"id": workflow_id},
+            include={"steps": {"order_by": {"order": "asc"}}},
+        )
+        if not workflow_data:
+            raise HTTPException(status_code=404, detail="Workflow not found")
 
-    workflow_data = await prisma.workflow.find_unique(
-        where={"id": workflow_id},
-        include={"steps": {"order_by": {"order": "asc"}}},
-    )
-    session_id = body.sessionId or ""
-    session_id = f"wf_{workflow_id}_{session_id}"
-    input = body.input
-    enable_streaming = body.enableStreaming
-    output_schemas = body.outputSchemas
-    last_output_schema = body.outputSchema
+        session_id = body.sessionId or f"wf_{workflow_id}_{body.sessionId or ''}"
+        input = body.input
+        enable_streaming = body.enableStreaming
+        output_schemas = body.outputSchemas
+        last_output_schema = body.outputSchema
 
-    workflow_steps = []
-    for idx, step in enumerate(workflow_data.steps):
-        agent_data = await prisma.agent.find_unique_or_raise(
-            where={"id": step.agentId},
-            include={
-                "llms": {"include": {"llm": True}},
-                "datasources": {
-                    "include": {"datasource": {"include": {"vectorDb": True}}}
+        workflow_steps = []
+        for idx, step in enumerate(workflow_data.steps):
+            agent_data = await prisma.agent.find_unique(
+                where={"id": step.agentId},
+                include={
+                    "llms": {"include": {"llm": True}},
+                    "datasources": {"include": {"datasource": {"include": {"vectorDb": True}}}},
+                    "tools": {"include": {"tool": True}},
                 },
-                "tools": {"include": {"tool": True}},
-            },
+            )
+            if not agent_data:
+                raise HTTPException(status_code=404, detail="Agent data not found")
+            
+            output_schema = agent_data.outputSchema
+            llm_model = LLM_MAPPING.get(agent_data.llmModel)
+            metadata = agent_data.metadata or {}
+
+            if not llm_model and metadata.get("model"):
+                llm_model = metadata.get("model")
+
+            output_schema = output_schemas.get(step.id) or (last_output_schema if idx == len(workflow_data.steps) - 1 else output_schema)
+
+            item = {
+                "callbacks": {"cost_calc": CostCalcAsyncHandler(model=llm_model)},
+                "agent_name": agent_data.name,
+                "output_schema": output_schema,
+                "agent_data": agent_data,
+            }
+            session_tracker_handler = get_session_tracker_handler(
+                workflow_data.id, agent_data.id, session_id, api_user.id
+            )
+
+            if session_tracker_handler:
+                item["callbacks"]["session_tracker"] = session_tracker_handler
+
+            if enable_streaming:
+                item["callbacks"]["streaming"] = CustomAsyncIteratorCallbackHandler()
+
+            workflow_steps.append(item)
+
+        workflow_callbacks = [[v for v in s["callbacks"].values()] for s in workflow_steps]
+
+        agentops_api_key = config("AGENTOPS_API_KEY", default=None)
+        agentops_org_key = config("AGENTOPS_ORG_KEY", default=None)
+        agentops_handler = AsyncLangchainCallbackHandler(
+            api_key=agentops_api_key, org_key=agentops_org_key, tags=[session_id]
         )
-        output_schema = agent_data.outputSchema
-        llm_model = LLM_MAPPING.get(agent_data.llmModel)
-        metadata = agent_data.metadata or {}
 
-        if not llm_model and metadata.get("model"):
-            llm_model = agent_data.metadata.get("model")
-
-        if output_schemas.get(step.id):
-            output_schema = output_schemas[step.id]
-        elif last_output_schema and idx == len(workflow_data.steps) - 1:
-            output_schema = last_output_schema
-
-        item = {
-            "callbacks": {
-                "cost_calc": CostCalcAsyncHandler(model=llm_model),
-            },
-            "agent_name": agent_data.name,
-            "output_schema": output_schema,
-            "agent_data": agent_data,
-        }
-        session_tracker_handler = get_session_tracker_handler(
-            workflow_data.id, agent_data.id, session_id, api_user.id
+        workflow = WorkflowBase(
+            workflow_steps=workflow_steps,
+            enable_streaming=enable_streaming,
+            callbacks=workflow_callbacks,
+            constructor_callbacks=[agentops_handler],
+            session_id=session_id,
         )
 
-        if session_tracker_handler:
-            item["callbacks"]["session_tracker"] = session_tracker_handler
+        def track_invocation(output):
+            for index, workflow_step in enumerate(workflow_steps):
+                workflow_step_result = output.get("steps", [])[index]
+                cost_callback = workflow_step["callbacks"]["cost_calc"]
+                agent = workflow_steps[index]["agent_data"]
 
-        if enable_streaming:
-            item["callbacks"]["streaming"] = CustomAsyncIteratorCallbackHandler()
-
-        workflow_steps.append(item)
-    workflow_callbacks = []
-
-    for s in workflow_steps:
-        callbacks = []
-        for _, v in s["callbacks"].items():
-            callbacks.append(v)
-        workflow_callbacks.append(callbacks)
-
-    agentops_api_key = config("AGENTOPS_API_KEY", default=None)
-    agentops_org_key = config("AGENTOPS_ORG_KEY", default=None)
-
-    agentops_handler = AsyncLangchainCallbackHandler(
-        api_key=agentops_api_key, org_key=agentops_org_key, tags=[session_id]
-    )
-
-    workflow = WorkflowBase(
-        workflow_steps=workflow_steps,
-        enable_streaming=enable_streaming,
-        callbacks=workflow_callbacks,
-        constructor_callbacks=[agentops_handler],
-        session_id=session_id,
-    )
-
-    def track_invocation(output):
-        for index, workflow_step in enumerate(workflow_steps):
-            workflow_step_result = output.get("steps")[index]
-            cost_callback = workflow_step["callbacks"]["cost_calc"]
-            agent = workflow_steps[index]["agent_data"]
-
-            track_agent_invocation(
-                {
+                track_agent_invocation({
                     "workflow_id": workflow_id,
                     "agent": agent,
                     "user_id": api_user.id,
                     "session_id": session_id,
                     **workflow_step_result,
                     **vars(cost_callback),
-                }
-            )
+                })
 
-    if enable_streaming:
-        logger.info("Streaming enabled. Preparing streaming response...")
+        if enable_streaming:
+            logger.info("Streaming enabled. Preparing streaming response...")
 
-        async def send_message() -> AsyncIterable[str]:
-            try:
-                task = asyncio.ensure_future(workflow.arun(input))
-                for workflow_step in workflow_steps:
-                    output_schema = workflow_step["output_schema"]
+            async def send_message() -> AsyncIterable[str]:
+                try:
+                    task = asyncio.ensure_future(workflow.arun(input))
+                    for workflow_step in workflow_steps:
+                        output_schema = workflow_step["output_schema"]
+                        schema_tokens = ""
 
-                    # we are not streaming token by token if output schema is set
-                    schema_tokens = ""
+                        async for token in workflow_step["callbacks"]["streaming"].aiter():
+                            if not output_schema:
+                                agent_name = workflow_step["agent_name"]
+                                async for val in stream_dict_keys({"id": agent_name, "data": token}):
+                                    yield val
+                            else:
+                                schema_tokens += token
 
-                    async for token in workflow_step["callbacks"]["streaming"].aiter():
-                        if not output_schema:
-                            agent_name = workflow_step["agent_name"]
-                            async for val in stream_dict_keys(
-                                {
-                                    "id": agent_name,
-                                    "data": token,
-                                }
-                            ):
-                                yield val
-                        else:
-                            schema_tokens += token
+                        if output_schema:
+                            from langchain.output_parsers.json import SimpleJsonOutputParser
 
-                    if output_schema:
-                        from langchain.output_parsers.json import SimpleJsonOutputParser
+                            parser = SimpleJsonOutputParser()
+                            try:
+                                parsed_res = parser.parse(schema_tokens)
+                            except Exception as e:
+                                logger.error(f"Error in parsing schema: {e}")
+                                parsed_res = {}
 
-                        parser = SimpleJsonOutputParser()
-                        try:
-                            parsed_res = parser.parse(schema_tokens)
-                        except Exception as e:
-                            # TODO: stream schema parsing error as well
-                            logger.error(f"Error in parsing schema: {e}")
-                            parsed_res = {}
+                            for line in json.dumps(parsed_res).split("\n"):
+                                agent_name = workflow_step["agent_name"]
+                                async for val in stream_dict_keys({"id": agent_name, "data": line}):
+                                    yield val
 
-                        # stream line by line to prevent streaming large data in one go
-                        for line in json.dumps(parsed_res).split("\n"):
-                            agent_name = workflow_step["agent_name"]
-                            async for val in stream_dict_keys(
-                                {
-                                    "id": agent_name,
-                                    "data": line,
-                                }
-                            ):
-                                yield val
+                    await task
+                    exception = task.exception()
+                    if exception:
+                        raise exception
 
-                await task
-                exception = task.exception()
-                if exception:
-                    raise exception
-
-                workflow_result = task.result()
-
-                for index, workflow_step in enumerate(workflow_steps):
-                    workflow_step_result = workflow_result.get("steps")[index]
-
+                    workflow_result = task.result()
                     if SEGMENT_WRITE_KEY:
                         track_invocation(workflow_result)
 
-                    for step in workflow_step_result.get("intermediate_steps", []):
-                        (agent_action_message_log, tool_response) = step
-                        function = agent_action_message_log.tool
-                        args = agent_action_message_log.tool_input
-                        if function and args:
-                            async for val in stream_dict_keys(
-                                {
+                    for index, workflow_step in enumerate(workflow_steps):
+                        workflow_step_result = workflow_result.get("steps", [])[index]
+                        for step in workflow_step_result.get("intermediate_steps", []):
+                            (agent_action_message_log, tool_response) = step
+                            function = agent_action_message_log.tool
+                            args = agent_action_message_log.tool_input
+                            if function and args:
+                                async for val in stream_dict_keys({
                                     "event": "function_call",
                                     "data": {
                                         "step_name": workflow_step["agent_name"],
@@ -349,48 +324,44 @@ async def invoke(
                                         "args": json.dumps(args),
                                         "response": tool_response,
                                     },
-                                }
-                            ):
-                                yield val
+                                }):
+                                    yield val
 
-            except Exception as error:
-                yield (f"event: error\n" f"data: {error}\n\n")
-
-                if SEGMENT_WRITE_KEY:
-                    for workflow_step in workflow_steps:
-                        agent = workflow_step["agent_data"]
-                        track_agent_invocation(
-                            {
+                except Exception as error:
+                    yield f"event: error\ndata: {error}\n\n"
+                    if SEGMENT_WRITE_KEY:
+                        for workflow_step in workflow_steps:
+                            agent = workflow_step["agent_data"]
+                            track_agent_invocation({
                                 "workflow_id": workflow_id,
                                 "agent": agent,
                                 "user_id": api_user.id,
                                 "session_id": session_id,
                                 "error": str(error),
                                 "status_code": 500,
-                            }
-                        )
+                            })
+                    logger.exception(f"Error in send_message: {error}")
+                finally:
+                    for workflow_step in workflow_steps:
+                        workflow_step["callbacks"]["streaming"].done.set()
 
-                logger.exception(f"Error in send_message: {error}")
-            finally:
-                for workflow_step in workflow_steps:
-                    workflow_step["callbacks"]["streaming"].done.set()
+            generator = send_message()
+            return StreamingResponse(generator, media_type="text/event-stream")
 
-        generator = send_message()
-        return StreamingResponse(generator, media_type="text/event-stream")
+        logger.info("Streaming not enabled. Invoking workflow synchronously...")
+        output = await workflow.arun(input)
+        if SEGMENT_WRITE_KEY:
+            track_invocation(output)
 
-    logger.info("Streaming not enabled. Invoking workflow synchronously...")
-    output = await workflow.arun(
-        input,
-    )
+        agentops_handler.ao_client.end_session("Success", end_state_reason="Workflow completed")
+        return {"success": True, "data": output}
 
-    if SEGMENT_WRITE_KEY:
-        track_invocation(output)
-
-    # End session
-    agentops_handler.ao_client.end_session(
-        "Success", end_state_reason="Workflow completed"
-    )
-    return {"success": True, "data": output}
+    except HTTPException as e:
+        logger.error(f"HTTPException: {e.detail}")
+        raise e
+    except Exception as e:
+        logger.exception(f"Unhandled exception in invoke: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
 # Workflow steps
