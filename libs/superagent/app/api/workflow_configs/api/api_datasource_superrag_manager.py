@@ -52,6 +52,7 @@ class ApiDatasourceSuperRagManager(BaseApiDatasourceManager):
         self.superrag_service = SuperRagService()
 
     async def _create_tool(self, assistant: dict, data: dict):
+        print("apps>api>workflow_configs>api>api_datasource_superrag_manager.py>_create_tool","line 55")
         try:
             res = await api_create_tool(
                 body=ToolRequest.parse_obj(data),
@@ -66,6 +67,7 @@ class ApiDatasourceSuperRagManager(BaseApiDatasourceManager):
             logger.error(f"Error creating tool: {data} - Error: {err}")
 
     async def _add_tool(self, assistant: dict, data: dict):
+        print("apps>api>workflow_configs>api>api_datasource_superrag_manager.py>_add_tool","line 70")
         new_tool = await self._create_tool(assistant, data)
         assistant = await self.agent_manager.get_assistant(assistant)
 
@@ -82,6 +84,7 @@ class ApiDatasourceSuperRagManager(BaseApiDatasourceManager):
             logger.error(f"Error adding tool: {new_tool} - {assistant} - Error: {err}")
 
     async def _update_tool(self, assistant: dict, data: dict):
+        print("apps>api>workflow_configs>api>api_datasource_superrag_manager.py>_update_tool","line 87")
         tool = await self.agent_manager.get_tool(assistant, data)
 
         try:
@@ -97,6 +100,7 @@ class ApiDatasourceSuperRagManager(BaseApiDatasourceManager):
             )
 
     async def _add_superrag_tool(self, assistant: dict, data: dict):
+        print("apps>api>workflow_configs>api>api_datasource_superrag_manager.py>_add_superrag_tool","line 103")
         new_tool = {
             **data,
             "type": ToolType.SUPERRAG.value,
@@ -114,6 +118,7 @@ class ApiDatasourceSuperRagManager(BaseApiDatasourceManager):
         await self._add_tool(assistant, new_tool)
 
     async def _delete_tool(self, assistant: dict, tool: dict):
+        print("apps>api>workflow_configs>api>api_datasource_superrag_manager.py>_delete_tool","line 121")
         tool = await self.agent_manager.get_tool(assistant, tool)
 
         try:
@@ -126,6 +131,7 @@ class ApiDatasourceSuperRagManager(BaseApiDatasourceManager):
             logger.error(f"Error deleting tool: {tool} - {assistant} - Error: {err}")
 
     async def _get_unique_index_name(self, datasource: dict, assistant: dict):
+        print("apps>api>workflow_configs>api>api_datasource_superrag_manager.py>_get_unique_index_name","line 134")
         datasource_name = datasource.get("name")
         unique_name = f"{datasource_name}{random_id(8)}"
         unique_name = re.sub(r"[^a-zA-Z0-9-]", "", unique_name)
@@ -133,6 +139,7 @@ class ApiDatasourceSuperRagManager(BaseApiDatasourceManager):
         return unique_name
 
     async def update_datasource(self, assistant: dict, data: dict):
+        print("apps>api>workflow_configs>api>api_datasource_superrag_manager.py>update_datasource","line 142")
         """
         This method only updates the superrag tool, not the datasource in SuperRag.
         To achive that, first delete the datasource and then add it again.
@@ -140,12 +147,14 @@ class ApiDatasourceSuperRagManager(BaseApiDatasourceManager):
         await self._update_tool(assistant, data)
 
     async def add_datasource(self, assistant: dict, data: dict):
+        print("apps>api>workflow_configs>api>api_datasource_superrag_manager.py>add_datasource","line 150")
         data["index_name"] = await self._get_unique_index_name(data, assistant)
 
         await self._add_superrag_tool(assistant, data)
         await self.superrag_service.aingest(data=data)
 
     async def delete_datasource(self, assistant: dict, datasource: dict):
+        print("apps>api>workflow_configs>api>api_datasource_superrag_manager.py>delete_datasource","line 157")
         tool = await self.agent_manager.get_tool(
             assistant,
             {
