@@ -60,6 +60,7 @@ class ApiAgentToolManager(BaseApiAgentManager):
         self.api_user = api_user
 
     async def get_assistant(self, assistant: dict):
+        print("apps>api>workflow_configs>api>api_agent_tool_manager>get_assistant","line 63")
         assistant = AgentUpdateRequest.parse_obj(assistant)
 
         agent_tools = await prisma.agenttool.find_many(
@@ -84,6 +85,7 @@ class ApiAgentToolManager(BaseApiAgentManager):
                 return agent
 
     async def get_tool(self, assistant: dict, tool: dict):
+        print("apps>api>workflow_configs>api>api_agent_tool_manager>get_tool","line 88")
         tool = ToolRequest.parse_obj(tool)
         agent = await self.get_assistant(assistant)
         agent_tools = await prisma.agenttool.find_many(
@@ -100,6 +102,7 @@ class ApiAgentToolManager(BaseApiAgentManager):
                 return agent_tool.tool
 
     async def get_datasource(self, assistant: dict, datasource: dict):
+        print("apps>api>workflow_configs>api>api_agent_tool_manager>get_datasource","line 105")
         datasource = DatasourceUpdateRequest.parse_obj(datasource)
         agent = await self.get_assistant(assistant)
 
@@ -117,6 +120,7 @@ class ApiAgentToolManager(BaseApiAgentManager):
                 return agent_datasource.datasource
 
     async def create_assistant(self, data: dict):
+        print("apps>api>workflow_configs>api>api_agent_tool_manager>create_assistant","line 123")
         try:
             res = await api_create_agent(
                 body=AgentRequest.parse_obj(data),
@@ -131,6 +135,7 @@ class ApiAgentToolManager(BaseApiAgentManager):
             logger.error(f"Error creating agent: {data} - Error: {err}")
 
     async def create_tool(self, assistant: dict, data: dict):
+        print("apps>api>workflow_configs>api>api_agent_tool_manager>create_tool","line 138")
         try:
             res = await api_create_tool(
                 body=ToolRequest.parse_obj(data),
@@ -145,6 +150,7 @@ class ApiAgentToolManager(BaseApiAgentManager):
             logger.error(f"Error creating tool: {data} - Error: {err}")
 
     async def add_assistant(self, data: dict, _):
+        print("apps>api>workflow_configs>api>api_agent_tool_manager>add_assistant","line 153")
         new_agent = await self.create_assistant(data)
 
         new_tool = await self.create_tool(
@@ -176,6 +182,7 @@ class ApiAgentToolManager(BaseApiAgentManager):
         return new_agent
 
     async def get_agent_tool(self, assistant: dict):
+        print("apps>api>workflow_configs>api>api_agent_tool_manager>get_agent_tool","line 185")
         assistant = AgentUpdateRequest.parse_obj(assistant)
 
         agent_tools = await prisma.agenttool.find_many(
@@ -191,6 +198,7 @@ class ApiAgentToolManager(BaseApiAgentManager):
                 return agent_tool.tool
 
     async def delete_assistant(self, assistant: dict):
+        print("apps>api>workflow_configs>api>api_agent_tool_manager>delete_assistant","line 201")
         agent = await self.get_assistant(assistant)
 
         try:
@@ -214,6 +222,7 @@ class ApiAgentToolManager(BaseApiAgentManager):
             logger.error(f"Error deleting tool: {assistant} - Error: {err}")
 
     async def update_assistant(self, assistant: dict, data: dict):
+        print("apps>api>workflow_configs>api>api_agent_tool_manager>update_assistant","line 225")
         agent = await self.get_assistant(assistant)
 
         try:
