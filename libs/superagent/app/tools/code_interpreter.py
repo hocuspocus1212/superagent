@@ -5,6 +5,7 @@ from langchain_community.tools import BaseTool
 
 
 class CodeInterpreter(BaseTool):
+    print("apps>tools>code_interpreter.py>CodeInterpreter","line 8")
     name = "Code executor"
     description = "useful for executing code. returns the evaluation/result"
 
