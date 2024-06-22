@@ -4,6 +4,7 @@ from langchain_community.tools import BaseTool, PubmedQueryRun
 
 
 class PubMed(BaseTool):
+    print("apps>tools>pubmed.py>PubMed","line 7")
     name = "PubMed® search"
     description = "useful for answering question about medical publications"
     return_direct = False
