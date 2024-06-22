@@ -6,6 +6,7 @@ logger = logging.getLogger(__name__)
 
 
 def get_first_non_null(*args):
+    print("apps>utils>helpers.py>get_first_non_null","line 9")
     """
     Returns the first non-null argument
     """
@@ -16,6 +17,7 @@ def get_first_non_null(*args):
 
 
 def remove_key_if_present(dictionary, key):
+    print("apps>utils>helpers.py>remove_key_if_present","line 20")
     """
     Removes a key from a dictionary if it exists
     """
@@ -24,6 +26,7 @@ def remove_key_if_present(dictionary, key):
 
 
 def compare_dicts(dict1, dict2):
+    print("apps>utils>helpers.py>compare_dicts","line 29")
     """
     Returns a dictionary of the changed fields between two dictionaries
 
@@ -49,6 +52,7 @@ def compare_dicts(dict1, dict2):
 
 
 def rename_and_remove_key(dictionary, old_key, new_key):
+    print("apps>utils>helpers.py>rename_and_remove_key","line 55")
     """
     Renames a key in a dictionary and removes the old key if it exists
 
@@ -62,6 +66,7 @@ def rename_and_remove_key(dictionary, old_key, new_key):
 
 
 def rename_and_remove_keys(dictionary, key_map):
+    print("apps>utils>helpers.py>rename_and_remove_keys","line 69")
     """
     Renames a key in a dictionary and removes the old key if it exists
 
@@ -73,6 +78,7 @@ def rename_and_remove_keys(dictionary, key_map):
 
 
 def parse_mimetype(mimetype):
+    print("apps>utils>helpers.py>parse_mimetype","line 81")
     if not mimetype:
         return None
 
@@ -82,6 +88,7 @@ def parse_mimetype(mimetype):
 
 
 def get_mimetype_from_url(url):
+    print("apps>utils>helpers.py>get_mimetype_from_url","line 91")
     try:
         logger.info(f"Fetching URL {url} to get mimetype")
         response = requests.head(url)
@@ -105,6 +112,7 @@ MIME_TYPE_TO_EXTENSION = {
 
 
 def get_superrag_compatible_credentials(credentials: dict):
+    print("apps>utils>helpers.py>get_superrag_compatible_credentials","line 115")
     credential_keys_mapping = {
         # pinecone
         "PINECONE_API_KEY": "api_key",
@@ -128,12 +136,14 @@ def get_superrag_compatible_credentials(credentials: dict):
 
 
 def get_first_non_null_key(dictionary) -> str:
+    print("apps>utils>helpers.py>get_first_non_null_key","line 139")
     for key in dictionary:
         if dictionary[key] is not None:
             return key
 
 
 async def stream_dict_keys(dict_to_stream):
+    print("apps>utils>helpers.py>stream_dict_keys","line 146")
     for idx, (key, value) in enumerate(dict_to_stream.items()):
         if idx == len(dict_to_stream) - 1:
             yield f"{key}: {value}\n\n"
