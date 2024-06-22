@@ -8,6 +8,7 @@ API_BASE_URL = config("SUPERAGENT_API_URL")
 
 
 class Agent(BaseTool):
+    print("apps>tools>advanceScraper.py>Agent","line 11")
     name = "Agent as a Tool"
     description = "useful for answering questions."
     return_direct = False
