@@ -3,6 +3,7 @@ from langchain_community.tools import BaseTool
 
 
 class Replicate(BaseTool):
+    print("apps>tools>replicate.py>Replicate","line 6")
     name = "Replicate"
     description = "useful for querying a Replicate model."
     return_direct = False
