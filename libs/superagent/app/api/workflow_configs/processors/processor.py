@@ -19,14 +19,18 @@ class Processor:
         self.api_manager = api_manager
 
     def get_data_processor(self, assistant: dict) -> BaseProcessor:
+        print("apps>api>workflow_configs>processors>processor.py>get_data_processor","line 22")
+
         if assistant.get("type") == AgentType.OPENAI_ASSISTANT:
             return OpenaiDataProcessor(assistant, self.api_manager, self.api_user)
         return SuperagentDataProcessor(assistant, self.api_manager, self.api_user)
 
     def get_tool_processor(self, assistant: dict) -> BaseProcessor:
+        print("apps>api>workflow_configs>processors>processor.py>get_tool_processor","line 29")
         if assistant.get("type") == AgentType.OPENAI_ASSISTANT:
             return OpenaiToolProcessor(assistant, self.api_manager, self.api_user)
         return SuperagentToolProcessor(assistant, self.api_manager, self.api_user)
 
     def get_superrag_processor(self, assistant: dict) -> BaseProcessor:
+        print("apps>api>workflow_configs>processors>processor.py>get_superrag_processor","line 35")
         return SuperragDataProcessor(assistant, self.api_manager, self.api_user)
