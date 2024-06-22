@@ -27,6 +27,8 @@ def get_display_api_key(key: str):
     response_model=ApiKeyCreateResponse,
 )
 async def create(body: ApiKeyRequest, api_user=Depends(get_current_api_user)):
+    print("apps>api>api_key.py>create","line 30")
+    print("/api-keys")
     """Endpoint for creating an agent"""
     try:
         api_key = generate_jwt(
@@ -65,6 +67,8 @@ async def create(body: ApiKeyRequest, api_user=Depends(get_current_api_user)):
     response_model=ApiKeyResponse,
 )
 async def delete(id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>api_key.py>delete","line 70")
+    print("/api-keys/{id}")
     """Endpoint for deleting an agent"""
     try:
         api_key = await prisma.apikey.find_unique(where={"id": id})
@@ -95,6 +99,8 @@ async def delete(id: str, api_user=Depends(get_current_api_user)):
     response_model=ApiKeyListResponse,
 )
 async def list(api_user=Depends(get_current_api_user)):
+    print("apps>api>api_key.py>list","line 102")
+    print("/api-keys")
     """Endpoint for listing all agents"""
     try:
         api_keys = await prisma.apikey.find_many(
@@ -118,6 +124,8 @@ async def list(api_user=Depends(get_current_api_user)):
     response_model=ApiKeyResponse,
 )
 async def update(id: str, body: ApiKeyRequest, api_user=Depends(get_current_api_user)):
+    print("apps>api>api_key.py>update","line 127")
+    print("/api-keys/{id}")
     """Endpoint for updating an agent"""
     try:
         api_key = await prisma.apikey.find_unique(
