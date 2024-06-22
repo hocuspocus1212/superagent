@@ -36,6 +36,8 @@ async def create(
     body: DatasourceRequest,
     api_user=Depends(get_current_api_user),
 ):
+    print("apps>api>datasource_py.py>create","line 39")
+    print("/datasources")
     """Endpoint for creating an datasource"""
     try:
         vector_db = None
@@ -106,6 +108,8 @@ async def create(
     response_model=DatasourceListResponse,
 )
 async def list(api_user=Depends(get_current_api_user), skip: int = 0, take: int = 50):
+    print("apps>api>datasource_py.py>list","line 111")
+    print("/datasources")
     """Endpoint for listing all datasources"""
     try:
         import math
@@ -135,6 +139,8 @@ async def list(api_user=Depends(get_current_api_user), skip: int = 0, take: int 
     response_model=DatasourceResponse,
 )
 async def get(datasource_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>datasource_py.py>get","line 142")
+    print( "/datasources/{datasource_id}")
     """Endpoint for getting a specific datasource"""
     try:
         data = await prisma.datasource.find_first(
@@ -154,6 +160,8 @@ async def get(datasource_id: str, api_user=Depends(get_current_api_user)):
 async def update(
     datasource_id: str, body: DatasourceRequest, api_user=Depends(get_current_api_user)
 ):
+    print("apps>api>datasource_py.py>patch","line 163")
+    print( "/datasources/{datasource_id}")
     """Endpoint for updating a specific datasource"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -173,6 +181,8 @@ async def update(
     description="Delete a specific datasource",
 )
 async def delete(datasource_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>datasource_py.py>delete","line 184")
+    print( "/datasources/{datasource_id}")
     """Endpoint for deleting a specific datasource"""
     try:
         if SEGMENT_WRITE_KEY:
