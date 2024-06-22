@@ -58,9 +58,11 @@ class SupabaseVectorStore(VectorStoreBase):
 
     @backoff.on_exception(backoff.expo, Exception, max_tries=3)
     def _embed_with_retry(self, texts):
+        print("apps>vectorstores>supabase.py>_embed_with_retry","line 61")
         return self.embeddings.embed_documents(texts)
 
     def embed_documents(self, documents: list[Document], batch_size: int = 100):
+        print("apps>vectorstores>supabase.py>embed_documents","line 65")
         texts = [d.page_content for d in documents]
         metadatas = [
             document.metadata.update({"content": document.page_content})
@@ -87,6 +89,7 @@ class SupabaseVectorStore(VectorStoreBase):
         top_k: int | None,
         _query_type: typing.Literal["document", "all"] = "document",
     ) -> list[str]:
+        print("apps>vectorstores>supabase.py>query_documents","line 92")
         # create an embedding for the query sentence
         query_embedding = self.embeddings.embed_query(prompt)
 
@@ -107,6 +110,7 @@ class SupabaseVectorStore(VectorStoreBase):
         return docs
 
     def delete(self, datasource_id: str) -> None:
+        print("apps>vectorstores>supabase.py>delete","line 113")
         try:
             self.collection.delete(filters={"datasource_id": {"$eq": datasource_id}})
         except Exception as e:
