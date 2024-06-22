@@ -20,6 +20,8 @@ analytics.write_key = SEGMENT_WRITE_KEY
     response_model=ApiUserResponse,
 )
 async def create(body: ApiUserRequest):
+    print("apps>api>api_user.py>create","line 23")
+    print("/api-users")
     """Endpoint for creating an agent"""
     try:
         api_user = await prisma.apiuser.create({})
@@ -45,6 +47,8 @@ async def create(body: ApiUserRequest):
     response_model=ApiUserResponse,
 )
 async def get(api_user=Depends(get_current_api_user)):
+    print("apps>api>api_user.py>get","line 50")
+    print("/api-users/me")
     """Endpoint for getting a single api user"""
     try:
         return {"success": True, "data": api_user}
@@ -59,6 +63,8 @@ async def get(api_user=Depends(get_current_api_user)):
     response_model=None,
 )
 async def delete(api_user=Depends(get_current_api_user)):
+    print("apps>api>api_user.py>delete","line 66")
+    print("/api-users/me")
     """Endpoint for deleting an api user"""
     try:
         await prisma.apiuser.delete(where={"id": api_user.id})
@@ -74,6 +80,8 @@ async def delete(api_user=Depends(get_current_api_user)):
     response_model=None,
 )
 async def identify(body: ApiUserRequest, api_user=Depends(get_current_api_user)):
+    print("apps>api>api_user.py>identify","line 83")
+    print("/api-users/identify")
     """Endpoint for deleting an api user"""
     try:
         if SEGMENT_WRITE_KEY:
