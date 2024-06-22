@@ -56,6 +56,7 @@ class ApiManager:
         tool: dict,
         data: dict,
     ):
+        print("apps>api>workflow_configs>api>api_manager.py>update_tool","line 59")
         tool = await self.agent_manager.get_tool(assistant, tool)
 
         try:
@@ -69,6 +70,7 @@ class ApiManager:
             logger.error(f"Error updating tool: {tool} - {assistant} - Error: {err}")
 
     async def delete_tool(self, assistant: dict, tool: dict):
+        print("apps>api>workflow_configs>api>api_manager.py>delete_tool","line 73")
         tool = await self.agent_manager.get_tool(assistant, tool)
 
         try:
@@ -81,6 +83,7 @@ class ApiManager:
             logger.error(f"Error deleting tool: {tool} - {assistant} - Error: {err}")
 
     async def delete_datasource(self, assistant: dict, datasource: dict):
+        print("apps>api>workflow_configs>api>api_manager.py>delete_datasource","line 86")
         datasource = await self.agent_manager.get_datasource(assistant, datasource)
 
         try:
@@ -97,6 +100,7 @@ class ApiManager:
             )
 
     async def create_datasource(self, data: dict):
+        print("apps>api>workflow_configs>api>api_manager.py>create_datasource","line 103")
         try:
             res = await api_create_datasource(
                 body=DatasourceRequest.parse_obj(data),
@@ -111,6 +115,7 @@ class ApiManager:
             logger.error(f"Error creating datasource: {data} - Error: {err}")
 
     async def create_tool(self, assistant: dict, data: dict):
+        print("apps>api>workflow_configs>api>api_manager.py>create_tool","line 118")
         try:
             res = await api_create_tool(
                 body=ToolRequest.parse_obj(data),
@@ -125,6 +130,7 @@ class ApiManager:
             logger.error(f"Error creating tool: {data} - Error: {err}")
 
     async def add_datasource(self, assistant: dict, data: dict):
+        print("apps>api>workflow_configs>api>api_manager.py>add_datasource","line 133")
         assistant = await self.agent_manager.get_assistant(assistant)
         new_datasource = await self.create_datasource(data)
 
@@ -143,6 +149,7 @@ class ApiManager:
             )
 
     async def add_tool(self, assistant: dict, data: dict):
+        print("apps>api>workflow_configs>api>api_manager.py>add_tool","line 152")
         new_tool = await self.create_tool(assistant, data)
 
         assistant = await self.agent_manager.get_assistant(assistant)
@@ -160,6 +167,7 @@ class ApiManager:
             logger.error(f"Error adding tool: {new_tool} - {assistant} - Error: {err}")
 
     def get_vector_database_by_provider(self, provider: str):
+        print("apps>api>workflow_configs>api>api_manager.py>get_vector_database_by_provider","line 170")
         return prisma.vectordb.find_first(
             where={
                 "provider": VECTOR_DB_MAPPING.get(provider),
@@ -168,6 +176,7 @@ class ApiManager:
         )
 
     def get_vector_database_by_user_id(self):
+        print("apps>api>workflow_configs>api>api_manager.py>get_vector_database_by_user_id","line 179")
         return prisma.vectordb.find_first(
             where={
                 "apiUserId": self.api_user.id,
