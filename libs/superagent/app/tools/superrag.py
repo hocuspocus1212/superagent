@@ -19,6 +19,7 @@ DEFAULT_ENCODER_OPTIONS = {
 
 
 class SuperRagTool(BaseTool):
+    print("apps>tools>superrag.py>SuperRagTool","line 22")
     name = "superrag"
     description = "useful for when you need to answer questions"
     return_direct = False
