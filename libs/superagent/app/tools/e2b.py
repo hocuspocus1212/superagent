@@ -9,6 +9,7 @@ from langchain_community.tools import BaseTool
 
 
 class E2BCodeExecutor(BaseTool):
+    print("apps>tools>e2b.py>E2BCodeExecutor","line 12")
     name = "Code interpreter"
     description = "useful for running python code, it returns the output of the code"
 
