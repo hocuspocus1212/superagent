@@ -4,6 +4,7 @@ from app.tools.tool import Tool
 
 
 def create_function_calling_prompt(input: str, tools: List[Type[Tool]]) -> str:
+    print("apps>tools>promts.py>create_function_calling_prompt","line 7")
     """
     Create a custom prompt for selecting the most suitable function and parameters.
 
@@ -33,6 +34,7 @@ def create_function_calling_prompt(input: str, tools: List[Type[Tool]]) -> str:
 
 
 def create_function_response_prompt(input: str, context: str) -> str:
+    print("apps>tools>promts.py>create_function_response_prompt","line 37")
     """
     Create a custom prompt for returning a Tool response.
 
