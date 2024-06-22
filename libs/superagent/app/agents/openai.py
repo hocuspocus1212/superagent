@@ -9,6 +9,8 @@ from app.agents.base import AgentBase
 
 
 class OpenAiAssistant(AgentBase):
+    print("apps>agents>openai.py>OpenAiAssistant","line 12")
+
     async def get_agent(self):
         assistant_id = self.agent_config.metadata.get("id")
         agent = OpenAIAssistantRunnable(assistant_id=assistant_id, as_agent=True)
