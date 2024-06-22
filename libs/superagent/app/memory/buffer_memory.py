@@ -11,6 +11,7 @@ DEFAULT_TOKEN_LIMIT = 3072
 
 
 def get_context_window(model: str) -> int:
+    print("apps>memory>buffer_memory.py>get_context_window","line 14")
     max_input_tokens = model_cost.get(model, {}).get("max_input_tokens")
 
     # Some models don't have a provider prefix in their name
@@ -42,6 +43,7 @@ class BufferMemory(BaseMemory):
         )
 
     def add_message(self, message: BaseMessage) -> None:
+        print("apps>memory>buffer_memory.py>add_message","line 46")
         self.memory_store.add_message(message)
 
     async def aadd_message(self, message: BaseMessage) -> None:
@@ -51,6 +53,7 @@ class BufferMemory(BaseMemory):
         self,
         inital_token_usage: int = 0,
     ) -> list[BaseMessage]:
+        print("apps>memory>buffer_memory.py>get_messages","line 56")
         messages = self.memory_store.get_messages()
 
         index = 0
@@ -67,4 +70,5 @@ class BufferMemory(BaseMemory):
         return messages[:index]
 
     def clear(self) -> None:
+        print("apps>memory>buffer_memory.py>clear","line 73")
         self.memory_store.clear()
