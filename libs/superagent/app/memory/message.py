@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 
 class MessageType(str, Enum):
+    print("apps>memory>message.py>MessageType","line 7")
     HUMAN = "human"
     AI = "ai"
     TOOL_CALL = "tool_call"
