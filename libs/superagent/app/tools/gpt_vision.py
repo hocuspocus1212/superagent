@@ -3,6 +3,7 @@ from openai import AsyncOpenAI, OpenAI
 
 
 class GPTVision(BaseTool):
+    print("apps>tools>gpt_vision.py>GPTVision","line 6")
     name = "gpt vision"
     description = "useful for analyzing images"
     return_direct = False
