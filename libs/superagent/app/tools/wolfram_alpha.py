@@ -5,6 +5,7 @@ from langchain_community.utilities.wolfram_alpha import WolframAlphaAPIWrapper
 
 
 class WolframAlpha(BaseTool):
+    print("apps>tools>wolfram_alpha.py>WolframAlpha","line 8")
     name = "Wolfram Alpha"
     description = "useful for calculation and computation"
     return_direct = False
