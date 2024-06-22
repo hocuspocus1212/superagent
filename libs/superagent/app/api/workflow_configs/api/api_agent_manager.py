@@ -43,6 +43,7 @@ class ApiAgentManager(BaseApiAgentManager):
         self.api_user = api_user
 
     async def get_assistant(self, assistant: dict):
+        print("apps>api>workflow_configs>api>get_assistant","line 46")
         assistant = AgentRequest.parse_obj(assistant)
 
         workflow_steps = await prisma.workflowstep.find_many(
@@ -58,6 +59,7 @@ class ApiAgentManager(BaseApiAgentManager):
                 return step.agent
 
     async def get_datasource(self, assistant: dict, datasource: dict):
+        print("apps>api>workflow_configs>api>get_datasource","line 62")
         datasource = DatasourceUpdateRequest.parse_obj(datasource)
         agent = await self.get_assistant(assistant)
         agent_datasources = await prisma.agentdatasource.find_many(
@@ -73,6 +75,7 @@ class ApiAgentManager(BaseApiAgentManager):
                 return agent_datasource.datasource
 
     async def get_tool(self, assistant: dict, tool: dict):
+        print("apps>api>workflow_configs>api>get_tool","line 78")
         tool = ToolUpdateRequest.parse_obj(tool)
         agent = await self.get_assistant(assistant)
         agent_tools = await prisma.agenttool.find_many(
@@ -88,6 +91,7 @@ class ApiAgentManager(BaseApiAgentManager):
                 return agent_tool.tool
 
     async def create_assistant(self, data: dict):
+        print("apps>api>workflow_configs>api>create_assistant","line 94")
         try:
             res = await api_create_agent(
                 body=AgentRequest.parse_obj(data),
@@ -102,6 +106,7 @@ class ApiAgentManager(BaseApiAgentManager):
             logger.error(f"Error creating agent: {data} - Error: {e}")
 
     async def add_assistant(self, data: dict, order: int | None = None):
+        print("apps>api>workflow_configs>api>add_assistant","line 109")
         new_agent = await self.create_assistant(data)
 
         if order is not None:
@@ -121,6 +126,7 @@ class ApiAgentManager(BaseApiAgentManager):
         return new_agent
 
     async def delete_assistant(self, assistant: dict):
+        print("apps>api>workflow_configs>api>delete_assistant","line 129")
         assistant = await self.get_assistant(assistant)
 
         try:
@@ -134,6 +140,7 @@ class ApiAgentManager(BaseApiAgentManager):
             logger.error(f"Error deleting assistant - Error: {e}")
 
     async def update_assistant(self, assistant: dict, data: dict):
+        print("apps>api>workflow_configs>api>update_assistant","line 143")
         agent = await self.get_assistant(assistant)
 
         try:
