@@ -8,6 +8,7 @@ from app.tools.base import BaseTool
 
 
 class LCBingSearch(LCBaseTool):
+    print("apps>memory>bing_search.py>LCBingSearch","line 11")
     name = "bing search"
     description = "useful for searching the internet"
     return_direct = False
@@ -35,10 +36,12 @@ class LCBingSearch(LCBaseTool):
 
 
 class BingSearchArgs(BaseModel):
+    print("apps>tools>bing_search.py>BingSearchArgs","line 39")
     search_query: str = Field(..., description="A search query")
 
 
 class BingSearch(BaseTool):
+    print("apps>tools>bing_search.py>BingSearch","line 44")
     args_schema = BingSearchArgs
 
     async def arun(self, args: BingSearchArgs) -> dict:
