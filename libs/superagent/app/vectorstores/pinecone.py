@@ -88,9 +88,11 @@ class PineconeVectorStore(VectorStoreBase):
 
     @backoff.on_exception(backoff.expo, Exception, max_tries=3)
     def _embed_with_retry(self, texts):
+        print("apps>vectorstores>pinecone.py>_embed_with_retry","line 91")
         return self.embeddings.embed_documents(texts)
 
     def embed_documents(self, documents: list[Document], batch_size: int = 100):
+        print("apps>vectorstores>pinecone.py>embed_documents","line 95")
         chunks = [
             {
                 "id": str(uuid.uuid4()),
@@ -127,6 +129,7 @@ class PineconeVectorStore(VectorStoreBase):
         return self.index.describe_index_stats()
 
     def _extract_match_data(self, match):
+        print("apps>vectorstores>pinecone.py>_extract_match_data","line 132")
         """Extracts id, text, and metadata from a match."""
         id = match.id
         text = match.metadata.get("text")
@@ -135,6 +138,7 @@ class PineconeVectorStore(VectorStoreBase):
         return id, text, metadata
 
     def _format_response(self, response: QueryResponse) -> list[Response]:
+        print("apps>vectorstores>pinecone.py>_format_response","line 141")
         """
         Formats the response dictionary from the vector database into a list of
         Response objects.
@@ -161,6 +165,7 @@ class PineconeVectorStore(VectorStoreBase):
         namespace: str | None = None,
         min_score: float | None = None,  # new argument for minimum similarity score
     ) -> list[Response]:
+        print("apps>vectorstores>pinecone.py>query","line 168")
         """
         Returns results from the vector database.
         """
@@ -193,6 +198,7 @@ class PineconeVectorStore(VectorStoreBase):
         top_k: int | None,
         query_type: Literal["document", "all"] = "document",
     ) -> list[str]:
+        print("apps>vectorstores>pinecone.py>query_documents","line 201")
         if top_k is None:
             top_k = 5
         logger.info(f"Executing query with document id in namespace {datasource_id}")
@@ -221,6 +227,7 @@ class PineconeVectorStore(VectorStoreBase):
         return [str(response) for response in documents_in_namespace]
 
     def delete(self, datasource_id: str):
+        print("apps>vectorstores>pinecone.py>delete","line 230")
         try:
             logger.info(f"Deleting vectors for datasource with id: {datasource_id}")
             self.index.delete(filter={"datasource_id": datasource_id})
@@ -229,6 +236,7 @@ class PineconeVectorStore(VectorStoreBase):
             logger.error(f"Failed to delete {datasource_id}. Error: {e}")
 
     def clear_cache(self, agent_id: str, datasource_id: str | None = None):
+        print("apps>vectorstores>pinecone.py>clear_cache","line 239")
         try:
             filter_dict = {"agentId": agent_id, "type": "cache"}
             if datasource_id:
