@@ -64,6 +64,7 @@ class QdrantVectorStore(VectorStoreBase):
         logger.info(f"Initialized Qdrant Client with: {self.index_name}")
 
     def embed_documents(self, documents: list[Document], batch_size: int = 100) -> None:
+        print("apps>vectorstores>qdrant.py>embed_documents","line 67")
         collections = self.client.get_collections()
         if self.index_name not in [c.name for c in collections.collections]:
             self.client.recreate_collection(
@@ -96,6 +97,7 @@ class QdrantVectorStore(VectorStoreBase):
         top_k: int | None,
         _query_type: Literal["document", "all"] = "document",
     ) -> list[str]:
+        print("apps>vectorstores>qdrant.py>query_documents","line 100")
         response = self.embeddings.embed_documents([prompt])
         embeddings = response[0]
         search_result = self.client.search(
@@ -115,6 +117,7 @@ class QdrantVectorStore(VectorStoreBase):
         return search_result
 
     def delete(self, datasource_id: str) -> None:
+        print("apps>vectorstores>qdrant.py>delete","line 120")
         try:
             self.client.delete(
                 collection_name=self.index_name,
