@@ -15,6 +15,7 @@ from prisma.models import Tool
 def get_function_schema(
     name: str, description: str, model: BaseModel
 ) -> dict[str, Any]:
+    print("apps>tools>flow.py>get_function_schema","line 18")
     signature_parts = []
 
     for field_name, field_model in model.__annotations__.items():
@@ -35,6 +36,7 @@ def get_function_schema(
 
 
 def is_valid_config(route_config: str) -> bool:
+    print("apps>tools>flow.py>is_valid_config","line 39")
     try:
         output_json = json.loads(route_config)
         return all(key in output_json for key in ["name", "utterances"])
@@ -43,6 +45,7 @@ def is_valid_config(route_config: str) -> bool:
 
 
 def parse_config(config: str) -> dict:
+    print("apps>tools>flow.py>parse_config","line 48")
     # Regular expression to match content inside <config></config>
     config_pattern = r"<config>(.*?)</config>"
     match = re.search(config_pattern, config, re.DOTALL)
@@ -55,6 +58,7 @@ def parse_config(config: str) -> dict:
 
 
 async def generate_route(function_schema: Dict[str, Any]) -> str:
+    print("apps>tools>flow.py>generate_route","line 61")
     prompt = f"""
     You are tasked to generate a JSON configuration based on the provided
     function schema. Please follow the template below, no other tokens allowed:
@@ -107,6 +111,7 @@ async def generate_route(function_schema: Dict[str, Any]) -> str:
     retries=0,
 )
 async def generate_tool_config(tool: Tool) -> None:
+    print("apps>tools>flow.py>generate_tool_config","line 114")
     tool_instance = TOOL_TYPE_MAPPING[tool.type]
     if tool_instance:
         model = tool_instance.get("schema")
