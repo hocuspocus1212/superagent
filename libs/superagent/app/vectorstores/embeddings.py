@@ -6,6 +6,7 @@ from app.utils.helpers import get_first_non_null
 
 
 def get_embeddings_model_provider(embeddings_model_provider: EmbeddingsModelProvider):
+    print("apps>vectorstores>embeddings.py>get_embeddings_model_provider","line 9")
     if embeddings_model_provider == EmbeddingsModelProvider.AZURE_OPENAI:
         return AzureOpenAIEmbeddings(
             azure_deployment=config("AZURE_OPENAI_EMBEDDINGS_DEPLOYMENT"),
