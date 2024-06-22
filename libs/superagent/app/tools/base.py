@@ -5,6 +5,7 @@ from pydantic import BaseModel
 
 
 class BaseTool(ABC):
+    print("apps>tools>base.py>BaseTool","line 8")
     args_schema: BaseModel = None
 
     def __init__(
