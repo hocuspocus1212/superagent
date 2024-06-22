@@ -18,6 +18,7 @@ class AgentProcessor:
         new_assistant_obj: dict,
         workflow_step_order: int | None = None,
     ):
+        print("apps>api>workflow_configs>processors>agent_processor.py>process_assistant","line 21")
         new_agent = None
 
         old_assistant_type: str = get_first_non_null_key(old_assistant_obj)
@@ -136,6 +137,8 @@ class AgentProcessor:
         return new_agent
 
     async def process_assistants(self, old_config, new_config):
+        print("apps>api>workflow_configs>processors>agent_processor.py>process_assistants","line 140")
+
         validator = SAMLValidator(new_config, self.api_user)
         await validator.validate()
 
