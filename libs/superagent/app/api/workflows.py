@@ -48,6 +48,8 @@ analytics.write_key = SEGMENT_WRITE_KEY
     response_model=WorkflowResponse,
 )
 async def create(body: WorkflowRequest, api_user=Depends(get_current_api_user)):
+    print("apps>api>workflows.py>create","line 51")
+    print("/workflows")
     """Endpoint for creating a workflow"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -70,6 +72,8 @@ async def create(body: WorkflowRequest, api_user=Depends(get_current_api_user)):
     response_model=WorkflowListResponse,
 )
 async def list(api_user=Depends(get_current_api_user), skip: int = 0, take: int = 50):
+    print("apps>api>workflows.py>list","line 75")
+    print("/workflows")
     """Endpoint for listing all workflows"""
     try:
         import math
@@ -104,6 +108,8 @@ async def list(api_user=Depends(get_current_api_user), skip: int = 0, take: int 
     response_model=WorkflowResponse,
 )
 async def get(workflow_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>workflows.py>get","line 111")
+    print("/workflows/{workflow_id}")
     """Endpoint for getting a single workflow"""
     try:
         data = await prisma.workflow.find_first(
@@ -134,6 +140,8 @@ async def get(workflow_id: str, api_user=Depends(get_current_api_user)):
 async def workflow_update(
     workflow_id: str, body: WorkflowRequest, api_user=Depends(get_current_api_user)
 ):
+    print("apps>api>workflows.py>workflow_update","line 143")
+    print("/workflows/{workflow_id}")
     """Endpoint for patching a workflow"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -156,6 +164,8 @@ async def workflow_update(
     description="Delete a specific workflow",
 )
 async def delete(workflow_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>workflows.py>delete","line 167")
+    print("/workflows/{workflow_id}")
     """Endpoint for deleting a specific workflow"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -177,6 +187,8 @@ async def invoke(
     body: WorkflowInvokeRequest,
     api_user=Depends(get_current_api_user),
 ):
+    print("apps>api>workflows.py>invoke","line 167")
+    print("/workflows/{workflow_id}/invoke")
     """Endpoint for invoking a specific workflow"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -374,6 +386,8 @@ async def invoke(
 async def add_step(
     workflow_id: str, body: WorkflowStepRequest, api_user=Depends(get_current_api_user)
 ):
+    print("apps>api>workflows.py>add_step","line 389")
+    print("/workflows/{workflow_id}/steps")
     """Endpoint for creating a workflow step"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -397,6 +411,8 @@ async def add_step(
     response_model=WorkflowStepListResponse,
 )
 async def list_steps(workflow_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>workflows.py>list_steps","line 414")
+    print("/workflows/{workflow_id}/steps")
     """Endpoint for listing all steps of a workflow"""
     try:
         data = await prisma.workflowstep.find_many(
@@ -421,6 +437,8 @@ async def list_steps(workflow_id: str, api_user=Depends(get_current_api_user)):
 async def delete_step(
     workflow_id: str, step_id: str, api_user=Depends(get_current_api_user)
 ):
+    print("apps>api>workflows.py>delete_step","line 440")
+    print("/workflows/{workflow_id}/steps/{step_id}")
     """Endpoint for deleting a specific workflow step"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -443,6 +461,8 @@ async def workflow_step_update(
     body: WorkflowStepRequest,
     api_user=Depends(get_current_api_user),
 ):
+    print("apps>api>workflows.py>workflow_step_update","line 464")
+    print("/workflows/{workflow_id}/steps/{step_id}")
     """Endpoint for patching a workflow step"""
     try:
         if SEGMENT_WRITE_KEY:
