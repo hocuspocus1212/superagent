@@ -24,6 +24,8 @@ analytics.write_key = SEGMENT_WRITE_KEY
     response_model=LLMResponse,
 )
 async def create(body: LLMRequest, api_user=Depends(get_current_api_user)):
+    print("apps>api>llm.py>create","line 27")
+    print("/llms")
     """Endpoint for creating an LLM"""
     if SEGMENT_WRITE_KEY:
         analytics.track(api_user.id, "Created LLM")
@@ -45,6 +47,8 @@ async def create(body: LLMRequest, api_user=Depends(get_current_api_user)):
     response_model=LLMListResponse,
 )
 async def list(api_user=Depends(get_current_api_user)):
+    print("apps>api>llm.py>list","line 50")
+    print("/llms")
     """Endpoint for listing all LLMs"""
     try:
         data = await prisma.llm.find_many(
@@ -65,6 +69,8 @@ async def list(api_user=Depends(get_current_api_user)):
     response_model=LLMResponse,
 )
 async def get(llm_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>llm.py>get","line 72")
+    print("/llms/{llm_id}")
     """Endpoint for getting a single LLM"""
     try:
         data = await prisma.llm.find_first(
@@ -83,6 +89,8 @@ async def get(llm_id: str, api_user=Depends(get_current_api_user)):
     response_model=LLMResponse,
 )
 async def update(llm_id: str, body: LLMRequest, api_user=Depends(get_current_api_user)):
+    print("apps>api>llm.py>patch","line 92")
+    print("/llms/{llm_id}")
     """Endpoint for patching an LLM"""
     try:
         if SEGMENT_WRITE_KEY:
