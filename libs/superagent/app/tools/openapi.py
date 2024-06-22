@@ -6,6 +6,7 @@ from langchain_community.tools import BaseTool
 
 
 class Openapi(BaseTool):
+    print("apps>tools>openapi.py>Openapi","line 9")
     name = "API"
     description = "useful for querying an api"
     return_direct = False
