@@ -6,6 +6,7 @@ from app.utils.prisma import prisma
 
 class OpenaiDataProcessor(BaseProcessor):
     async def process(self, old_data, new_data):
+        print("apps>api>workflow_configs>processors>openai.py>OpenaiDataProcessor","line 9")
         old_urls = old_data.get("urls") or []
         new_urls = new_data.get("urls") or []
 
@@ -43,6 +44,7 @@ class OpenaiDataProcessor(BaseProcessor):
 
 
 class OpenaiToolProcessor(BaseProcessor):
+    print("apps>api>workflow_configs>processors>openai.py>OpenaiDataProcessor","line 47")
     async def process(self, old_tools, new_tools):
         if old_tools != new_tools:
             agent = await self.api_manager.agent_manager.get_assistant(self.assistant)
