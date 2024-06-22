@@ -96,11 +96,13 @@ class WeaviateVectorStore(VectorStoreBase):
 
     @backoff.on_exception(backoff.expo, Exception, max_tries=3)
     def _embed_with_retry(self, texts):
+        print("apps>vectorstores>weaviate.py>_embed_with_retry","line 99")
         return self.embeddings.embed_documents(texts)
 
     def _similarity_search_by_vector(
         self, embedding: List[float], datasource_id: str, k: int = 4
     ) -> List[Document]:
+        print("apps>vectorstores>weaviate.py>_similarity_search_by_vector","line 104")
         """Look up similar documents by embedding vector in Weaviate."""
         vector = {"vector": embedding}
         result = (
@@ -128,6 +130,7 @@ class WeaviateVectorStore(VectorStoreBase):
         return docs
 
     def embed_documents(self, documents: list[Document], batch_size: int = 100):
+        print("apps>vectorstores>weaviate.py>embed_documents","line 131")
         texts = [d.page_content for d in documents]
         metadatas = [d.metadata for d in documents]
 
@@ -176,6 +179,7 @@ class WeaviateVectorStore(VectorStoreBase):
         top_k: int | None,
         _query_type: Literal["document", "all"] = "document",
     ) -> list[str]:
+        print("apps>vectorstores>weaviate.py>query_documents","line 179")
         if top_k is None:
             top_k = 5
 
@@ -187,6 +191,7 @@ class WeaviateVectorStore(VectorStoreBase):
         return results
 
     def delete(self, datasource_id: str) -> None:
+        print("apps>vectorstores>weaviate.py>delete","line 190")
         try:
             self.client.batch.delete_objects(
                 class_name=self.index_name.capitalize(),
