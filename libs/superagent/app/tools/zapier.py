@@ -6,6 +6,8 @@ from langchain_openai import ChatOpenAI
 
 
 class ZapierNLA(BaseTool):
+    print("apps>tools>zapier.py>ZapierNLA","line 9")
+
     name = "Zapier"
     description = (
         "useful for performing actions such sending emails, scheduling meetings etc."
