@@ -40,6 +40,8 @@ async def create(
     body: ToolRequest,
     api_user=Depends(get_current_api_user),
 ):
+    print("apps>api>tools.py>create","line 43")
+    print("/tools")
     """Endpoint for creating an tool"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -95,6 +97,8 @@ async def create(
     response_model=ToolListResponse,
 )
 async def list(api_user=Depends(get_current_api_user), skip: int = 0, take: int = 50):
+    print("apps>api>tools.py>get","line 100")
+    print("/tools")
     """Endpoint for listing all tools"""
     try:
         import math
@@ -128,6 +132,8 @@ async def list(api_user=Depends(get_current_api_user), skip: int = 0, take: int 
     response_model=ToolResponse,
 )
 async def get(tool_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>tools.py>get","line 136")
+    print("/tools/{tool_id}")
     """Endpoint for getting a specific tool"""
     try:
         data = await prisma.tool.find_first(
@@ -147,6 +153,8 @@ async def get(tool_id: str, api_user=Depends(get_current_api_user)):
 async def update(
     tool_id: str, body: ToolUpdateRequest, api_user=Depends(get_current_api_user)
 ):
+    print("apps>api>tools.py>update","line 156")
+    print("/tools/{tool_id}")
     """Endpoint for updating a specific tool"""
     if SEGMENT_WRITE_KEY:
         analytics.track(api_user.id, "Updated Tool")
@@ -171,6 +179,8 @@ async def update(
     description="Delete a specific tool",
 )
 async def delete(tool_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>tools.py>delete","line 182")
+    print("/tools/{tool_id}")
     """Endpoint for deleting a specific tool"""
     try:
         if SEGMENT_WRITE_KEY:
