@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 class LCHttpTool(LCBaseTool):
+    print("apps>tools>http.py>LCHttpTool","line 17")
     name = "API Request"
     description = "useful for making GET/POST API requests"
     return_direct = False
