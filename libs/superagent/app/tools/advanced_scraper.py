@@ -5,6 +5,7 @@ from langchain_community.tools import BaseTool
 
 
 class AdvancedScraper(BaseTool):
+    print("apps>memory>advanceScraper.py>AdvancedScraper","line 8")
     name = "AdvancedScraper"
     description = "useful for quickly and easily extracting content from a webpage (uses a real browser via Olostep)"
     return_direct = False
