@@ -2,6 +2,7 @@ from langchain_community.tools import BaseTool
 
 
 class Function(BaseTool):
+    print("apps>tools>function.py>Function","line 5")
     name = "cunstom function"
     description = "useful for doing something"
     return_direct = True
