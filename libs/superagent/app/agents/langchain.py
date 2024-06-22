@@ -23,6 +23,8 @@ from prompts.json import JSON_FORMAT_INSTRUCTIONS
 
 
 class LangchainAgent(AgentBase):
+    print("apps>agents>langchain.py>LangchainAgent","line 26")
+
     @property
     def tools(self) -> list[BaseTool]:
         return get_tools(agent_data=self.agent_data, session_id=self.session_id)
