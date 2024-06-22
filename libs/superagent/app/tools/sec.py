@@ -3,6 +3,7 @@ from langchain_community.tools import BaseTool
 
 
 class SEC(BaseTool):
+    print("apps>tools>sec.py>SEC","line 6")
     name = "SEC"
     description = "useful for searching SEC filings for a company"
     return_direct = False
