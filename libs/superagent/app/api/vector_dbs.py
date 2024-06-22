@@ -24,6 +24,8 @@ analytics.write_key = SEGMENT_WRITE_KEY
     response_model=VectorDbResponse,
 )
 async def create(body: VectorDbRequest, api_user=Depends(get_current_api_user)):
+    print("apps>api>vector_dbs.py>create","line 27")
+    print("/vector-db")
     """Endpoint for creating a Vector Database"""
     if SEGMENT_WRITE_KEY:
         analytics.track(api_user.id, "Created Vector Database")
@@ -46,6 +48,8 @@ async def create(body: VectorDbRequest, api_user=Depends(get_current_api_user)):
     response_model=VectorDbListResponse,
 )
 async def list(api_user=Depends(get_current_api_user)):
+    print("apps>api>vector_dbs.py>list","line 51")
+    print("/vector-db")
     """Endpoint for listing all Vector Databases"""
     try:
         data = await prisma.vectordb.find_many(
@@ -66,6 +70,8 @@ async def list(api_user=Depends(get_current_api_user)):
     response_model=VectorDbResponse,
 )
 async def get(vector_db_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>vector_dbs.py>get","line 73")
+    print("/vector-dbs/{vector_db_id}")
     """Endpoint for getting a single Vector Database"""
     try:
         data = await prisma.vectordb.find_first(
@@ -86,6 +92,8 @@ async def get(vector_db_id: str, api_user=Depends(get_current_api_user)):
 async def update(
     vector_db_id: str, body: VectorDbRequest, api_user=Depends(get_current_api_user)
 ):
+    print("apps>api>vector_dbs.py>update","line 95")
+    print("/vector-dbs/{vector_db_id}")
     """Endpoint for patching a Vector Database"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -110,6 +118,8 @@ async def update(
     description="Delete a Vector Database",
 )
 async def delete(vector_db_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>vector_dbs.py>delete","line 121")
+    print("/vector-dbs/{vector_db_id}")
     """Endpoint for deleting a Vector Database"""
     await prisma.vectordb.delete(where={"id": vector_db_id, "apiUserId": api_user.id})
     return {"success": True}
