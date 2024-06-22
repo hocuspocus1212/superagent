@@ -18,6 +18,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class Response:
+    print("apps>vectorstores>astra.py>Response","line 21")
     id: str
     text: str
     metadata: dict
@@ -101,6 +102,7 @@ class AstraVectorStore(VectorStoreBase):
         return self.embeddings.embed_documents(texts)
 
     def embed_documents(self, documents: List[Document], batch_size: int = 100):
+        print("apps>vectorstores>astra.py>embed_documents","line 105")
         chunks = [
             {
                 "id": str(uuid.uuid4()),
@@ -144,6 +146,7 @@ class AstraVectorStore(VectorStoreBase):
         namespace: Optional[str] = None,
         min_score: Optional[float] = None,  # new argument for minimum similarity score
     ) -> List[Response]:
+        print("apps>vectorstores>astra.py>query","line 149")
         """
         Returns results from the vector database.
         """
@@ -174,6 +177,7 @@ class AstraVectorStore(VectorStoreBase):
         top_k: Optional[int] = None,
         query_type: Literal["document", "all"] = "document",
     ) -> List[str]:
+        print("apps>vectorstores>astra.py>query_documents","line 180")
         if top_k is None:
             top_k = 3
 
@@ -203,6 +207,7 @@ class AstraVectorStore(VectorStoreBase):
         return [str(response) for response in documents_in_namespace]
 
     def _extract_match_data(self, match):
+        print("apps>vectorstores>astra.py>_extract_match_data","line 210")
         """Extracts id, text, and metadata from a match."""
         id = match.id
         text = match.metadata.get("text")
@@ -211,6 +216,7 @@ class AstraVectorStore(VectorStoreBase):
         return id, text, metadata
 
     def _format_response(self, response: QueryResponse) -> List[Response]:
+        print("apps>vectorstores>astra.py>_format_response","line 219")
         """
         Formats the response dictionary from the vector database into a list of
         Response objects.
@@ -230,12 +236,14 @@ class AstraVectorStore(VectorStoreBase):
         return responses
 
     def delete(self, datasource_id: str):
+        print("apps>vectorstores>astra.py>delete","line 239")
         try:
             pass
         except Exception as e:
             logger.error(f"Failed to delete {datasource_id}. Error: {e}")
 
     def clear_cache(self, agent_id: str, datasource_id: Optional[str] = None):
+        print("apps>vectorstores>astra.py>clear_cache","line 246")
         try:
             filter_dict = {"agentId": agent_id, "type": "cache"}
             if datasource_id:
