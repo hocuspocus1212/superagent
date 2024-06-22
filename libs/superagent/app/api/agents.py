@@ -68,6 +68,8 @@ logger = logging.getLogger(__name__)
 
 
 class LLMPayload:
+    print("apps>api>agents.py>LLMPayload","line 71")
+
     def __init__(self, provider: str, model: str, user_id: str):
         self.provider = provider
         self.model = model
@@ -75,6 +77,8 @@ class LLMPayload:
 
 
 async def get_llm_or_raise(data: LLMPayload) -> LLM:
+    print("apps>api>agents.py>get_llm_or_raise","line 80")
+
     provider = data.provider
 
     if data.model:
@@ -103,6 +107,7 @@ async def get_llm_or_raise(data: LLMPayload) -> LLM:
 
 
 class Assistant(ABC):
+    print("apps>api>agents.py>Assistant","line 110")
     @abstractmethod
     async def create_assistant(self, body: AgentRequest) -> dict:
         pass
@@ -121,6 +126,7 @@ class Assistant(ABC):
 
 
 class OpenAIAssistantSdk(Assistant):
+    print("apps>api>agents.py>OpenAIAssistantSdk","line 129")
     def __init__(self, llm: Optional[LLM] = None):
         self.llm = llm
         self.openai = AsyncOpenAI(api_key=self.llm.apiKey)
@@ -193,6 +199,8 @@ class OpenAIAssistantSdk(Assistant):
     response_model=AgentResponse,
 )
 async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
+    print("apps>api>agents.py>create","line 202")
+    print("/agents")
     """Endpoint for creating an agent"""
     user_id = api_user.id
     llm_provider = body.llmProvider
@@ -243,6 +251,8 @@ async def create(body: AgentRequest, api_user=Depends(get_current_api_user)):
     response_model=AgentListResponse,
 )
 async def list(api_user=Depends(get_current_api_user), skip: int = 0, take: int = 50):
+    print("apps>api>agents.py>list","line 254")
+    print("/agents")
     """Endpoint for listing all agents"""
     try:
         import math
@@ -275,6 +285,8 @@ async def list(api_user=Depends(get_current_api_user), skip: int = 0, take: int 
     response_model=AgentResponse,
 )
 async def get(agent_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>agents.py>get","line 288")
+    print("/agents/{agent_id}")
     """Endpoint for getting a single agent"""
     try:
         data = await prisma.agent.find_first(
@@ -306,6 +318,8 @@ async def get(agent_id: str, api_user=Depends(get_current_api_user)):
     response_model=None,
 )
 async def delete(agent_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>agents.py>delete","line 321")
+    print("/agents/{agent_id}")
     """Endpoint for deleting an agent"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -333,6 +347,8 @@ async def delete(agent_id: str, api_user=Depends(get_current_api_user)):
 async def update(
     agent_id: str, body: AgentUpdateRequest, api_user=Depends(get_current_api_user)
 ):
+    print("apps>api>agents.py>patch","line 350")
+    print("/agents/{agent_id}")
     """Endpoint for patching an agent"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -409,6 +425,8 @@ async def update(
 async def invoke(
     agent_id: str, body: AgentInvokeRequest, api_user=Depends(get_current_api_user)
 ):
+    print("apps>api>agents.py>post","line 428")
+    print("/agents/{agent_id}/invoke")
     """Endpoint for invoking an agent"""
     langfuse_secret_key = config("LANGFUSE_SECRET_KEY", "")
     langfuse_public_key = config("LANGFUSE_PUBLIC_KEY", "")
@@ -627,6 +645,8 @@ async def invoke(
 async def add_llm(
     agent_id: str, body: AgentLLMRequest, api_user=Depends(get_current_api_user)
 ):
+    print("apps>api>agents.py>add_llm","line 648")
+    print("/agents/{agent_id}/llms")
     """Endpoint for adding an LLM to an agent"""
     try:
         await prisma.agentllm.create({**body.dict(), "agentId": agent_id})
@@ -643,6 +663,8 @@ async def add_llm(
 async def remove_llm(
     agent_id: str, llm_id: str, api_user=Depends(get_current_api_user)
 ):
+    print("apps>api>agents.py>remove_llm","line 666")
+    print("/agents/{agent_id}/llms/{llm_id}")
     """Endpoint for removing an LLM from an agent"""
     try:
         await prisma.agentllm.delete(
@@ -665,6 +687,8 @@ async def add_tool(
     body: AgentToolRequest,
     api_user=Depends(get_current_api_user),
 ):
+    print("apps>api>agents.py>add_tool","line 690")
+    print("/agents/{agent_id}/tools")
     """Endpoint for adding a tool to an agent"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -695,6 +719,8 @@ async def add_tool(
     response_model=AgentToolListResponse,
 )
 async def list_tools(agent_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>agents.py>list_tools","line 722")
+    print("/agents/{agent_id}/tools")
     """Endpoint for listing agent tools"""
     try:
         agent_tools = await prisma.agenttool.find_many(where={"agentId": agent_id})
@@ -711,6 +737,8 @@ async def list_tools(agent_id: str, api_user=Depends(get_current_api_user)):
 async def remove_tool(
     agent_id: str, tool_id: str, api_user=Depends(get_current_api_user)
 ):
+    print("apps>api>agents.py>remove_tool","line 740")
+    print("/agents/{agent_id}/tools/{tool_id}")
     """Endpoint for removing a tool from an agent"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -740,6 +768,8 @@ async def add_datasource(
     body: AgentDatasourceRequest,
     api_user=Depends(get_current_api_user),
 ):
+    print("apps>api>agents.py>add_datasource","line 771")
+    print("/agents/{agent_id}/datasources")
     """Endpoint for adding a datasource to an agent"""
     try:
         if SEGMENT_WRITE_KEY:
@@ -783,6 +813,8 @@ async def add_datasource(
     response_model=AgentDatasosurceListResponse,
 )
 async def list_datasources(agent_id: str, api_user=Depends(get_current_api_user)):
+    print("apps>api>agents.py>list_datasources","line 816")
+    print("/agents/{agent_id}/datasources")
     """Endpoint for listing agent datasources"""
     try:
         agent_datasources = await prisma.agentdatasource.find_many(
@@ -801,6 +833,8 @@ async def list_datasources(agent_id: str, api_user=Depends(get_current_api_user)
 async def remove_datasource(
     agent_id: str, datasource_id: str, api_user=Depends(get_current_api_user)
 ):
+    print("apps>api>agents.py>remove_datasource","line 836")
+    print("/agents/{agent_id}/datasources/{datasource_id}")
     """Endpoint for removing a datasource from an agent"""
     try:
         if SEGMENT_WRITE_KEY:
