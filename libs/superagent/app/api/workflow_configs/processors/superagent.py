@@ -25,6 +25,7 @@ logger = logging.getLogger(__name__)
 
 class SuperragDataProcessor(BaseProcessor):
     async def process(self, old_data, new_data):
+        print("apps>api>workflow_configs>processors>superagent.py>SuperragDataProcessor","line 28")
         datasource_manager = ApiDatasourceSuperRagManager(
             self.api_user, self.api_manager.agent_manager
         )
@@ -76,7 +77,7 @@ class SuperragDataProcessor(BaseProcessor):
 
 class SuperagentDataProcessor(BaseProcessor):
     async def process(self, old_data, new_data):
-        old_urls = old_data.get("urls") or []
+        print("apps>api>workflow_configs>processors>superagent.py>SuperagentDataProcessor","line 80")
         new_urls = new_data.get("urls") or []
 
         # Process data URLs changes
