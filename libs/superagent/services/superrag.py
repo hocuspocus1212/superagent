@@ -41,6 +41,7 @@ class FileType(Enum):
 
 
 class File(BaseModel):
+    print("services>superrag.py>File>","line 44")
     url: str
     name: Optional[str] = None
 
@@ -73,6 +74,7 @@ class File(BaseModel):
 
 
 class SuperRagService:
+    print("services>superrag.py>SuperRagService>","line 77")
     def __init__(self, url: Optional[str] = None):
         self.url = url or config("SUPERRAG_API_URL")
 
