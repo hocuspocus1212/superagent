@@ -8,6 +8,7 @@ url = "https://google.serper.dev/search"
 
 
 class GoogleSearch(BaseTool):
+    print("apps>tools>google_search.py>GoogleSearch","line 11")
     name = "PubMed® search"
     description = "useful for answering question about medical publications"
     return_direct = False
