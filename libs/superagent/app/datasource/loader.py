@@ -28,6 +28,7 @@ class DataLoader:
         self.datasource = datasource
 
     def load(self) -> Any:
+        print("apps>datasource>loader.py>load","line 31")
         if self.datasource.type == "TXT":
             return self.load_txt()
         elif self.datasource.type == "PDF":
@@ -56,6 +57,7 @@ class DataLoader:
             raise ValueError(f"Unsupported datasource type: {self.datasource.type}")
 
     def load_txt(self):
+        print("apps>datasource>loader.py>load_txt","line 60")
         with NamedTemporaryFile(suffix=".txt", delete=True) as temp_file:
             if self.datasource.url:
                 file_response = requests.get(self.datasource.url).text
@@ -67,6 +69,7 @@ class DataLoader:
             return loader.load_and_split()
 
     def load_pdf(self):
+        print("apps>datasource>loader.py>load_pdf","line 72")
         if self.datasource.url:
             loader = PyPDFLoader(file_path=self.datasource.url)
         else:
@@ -78,9 +81,11 @@ class DataLoader:
         return loader.load_and_split()
 
     def load_google_doc(self):
+        print("apps>datasource>loader.py>load_google_doc","line 84")
         pass
 
     def load_pptx(self):
+        print("apps>datasource>loader.py>load_pptx","line 88")
         from pptx import Presentation
 
         with NamedTemporaryFile(suffix=".pptx", delete=True) as temp_file:
@@ -100,6 +105,7 @@ class DataLoader:
             return [Document(page_content=result)]
 
     def load_docx(self):
+        print("apps>datasource>loader.py>load_docx","line 108")
         with NamedTemporaryFile(suffix=".docx", delete=True) as temp_file:
             if self.datasource.url:
                 file_response = requests.get(self.datasource.url).content
@@ -111,6 +117,7 @@ class DataLoader:
             return loader.load_and_split()
 
     def load_markdown(self):
+        print("apps>datasource>loader.py>load_markdown","line 120")
         with NamedTemporaryFile(suffix=".md", delete=True) as temp_file:
             if self.datasource.url:
                 file_response = requests.get(self.datasource.url).text
@@ -122,6 +129,7 @@ class DataLoader:
             return loader.load()
 
     def load_github(self):
+        print("apps>datasource>loader.py>load_github","line 132")
         parsed_url = urlparse(self.datasource.url)
         path_parts = parsed_url.path.split("/")  # type: ignore
         repo_name = path_parts[2]
@@ -137,6 +145,7 @@ class DataLoader:
             return loader.load_and_split()
 
     def load_webpage(self):
+        print("apps>datasource>loader.py>load_webpage","line 148")
         loader = RecursiveUrlLoader(
             url=self.datasource.url,
             max_depth=2,
@@ -149,16 +158,19 @@ class DataLoader:
         return chunks
 
     def load_youtube(self):
+        print("apps>datasource>loader.py>load_youtube","line 161")
         video_id = self.datasource.url.split("youtube.com/watch?v=")[-1]
         loader = YoutubeLoader(video_id=video_id)
         return loader.load_and_split()
 
     def load_url(self):
+        print("apps>datasource>loader.py>load_url","line 167")
         url_list = self.datasource.url.split(",")
         loader = WebBaseLoader(url_list)
         return loader.load_and_split()
 
     def load_airtable(self):
+        print("apps>datasource>loader.py>load_airtable","line 173")
         metadata = json.loads(self.datasource.metadata)
         api_key = metadata["apiKey"]
         base_id = metadata["baseId"]
@@ -168,6 +180,7 @@ class DataLoader:
         return table.all()
 
     def load_stripe(self):
+        print("apps>datasource>loader.py>load_stripe","line 183")
         metadata = json.loads(self.datasource.metadata)
         client_secret = metadata["clientSecret"]
         account_id = metadata["accountId"]
