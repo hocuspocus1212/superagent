@@ -13,6 +13,7 @@ security = HTTPBearer()
 
 
 def handle_exception(e):
+    print("apps>utils>api.py>handle_exception","line 16")
     logger.exception(e)
     raise HTTPException(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e)
@@ -20,6 +21,7 @@ def handle_exception(e):
 
 
 def generate_jwt(data: dict):
+    print("apps>utils>api.py>generate_jwt","line 24")
     # for randomness
     data.update({"jti": str(uuid.uuid4())})
 
@@ -28,12 +30,14 @@ def generate_jwt(data: dict):
 
 
 def decode_jwt(token: str):
+    print("apps>utils>api.py>decode_jwt","line 33")
     return jwt.decode(token, config("JWT_SECRET"), algorithms=["HS256"])
 
 
 async def get_current_api_user(
     authorization: HTTPAuthorizationCredentials = Security(security),
 ):
+    print("apps>utils>api.py>get_current_api_user","line 40")
     token = authorization.credentials
     decoded_token = decode_jwt(token)
     api_user = await prisma.apiuser.find_unique(
