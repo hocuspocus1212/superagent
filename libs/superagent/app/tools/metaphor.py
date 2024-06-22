@@ -3,6 +3,7 @@ from langchain_community.utilities import MetaphorSearchAPIWrapper
 
 
 class MetaphorSearch(BaseTool):
+    print("apps>tools>metaphor.py>MetaphorSearch","line 6")
     name = "metaphor search"
     description = "useful for researching a certain topic"
     return_direct = False
