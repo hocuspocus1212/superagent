@@ -29,6 +29,8 @@ class AgentInvocationData(BaseModel):
 
 
 def track_agent_invocation(data: AgentInvocationData):
+    print("apps>utils>analytics.py>ZapierNLA","line 32")
+
     intermediate_steps_to_obj = [
         {
             **vars(toolClass),
