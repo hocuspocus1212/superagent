@@ -22,6 +22,7 @@ class Document(Type):
 async def handle_datasources(
     agent_datasources: List[AgentDatasource], agent_id: str
 ) -> None:
+    print("apps>datasource>flow.py>handle_datasources","line 25")
     llm = LLMEngine(
         id=agent_id,
         config={"production.key": config("LAMINI_API_KEY")},
@@ -45,6 +46,8 @@ async def vectorize(
     vector_db_provider: Optional[str],
     embeddings_model_provider: EmbeddingsModelProvider,
 ) -> None:
+    print("apps>datasource>flow.py>vectorize","line 49")
+
     data = DataLoader(datasource=datasource).load()
 
     vector_store = VectorStoreMain(
@@ -59,6 +62,7 @@ async def vectorize(
 async def handle_delete_datasource(
     datasource_id: str, options: Optional[dict], vector_db_provider: Optional[str]
 ) -> None:
+    print("apps>datasource>flow.py>handle_delete_datasource","line 65")
     vector_store = VectorStoreMain(
         options=options, vector_db_provider=vector_db_provider
     )
@@ -67,6 +71,7 @@ async def handle_delete_datasource(
 
 @flow(name="process_datasource", description="Process new agent datasource", retries=0)
 async def process_datasource(datasource_id: str, agent_id: str):
+    print("apps>datasource>flow.py>process_datasource","line 74")
     await prisma.agentdatasource.create(
         {"datasourceId": datasource_id, "agentId": agent_id}
     )
@@ -87,6 +92,7 @@ async def vectorize_datasource(
     vector_db_provider: Optional[str],
     embeddings_model_provider: EmbeddingsModelProvider,
 ) -> None:
+    print("apps>datasource>flow.py>vectorize_datasource","line 95")
     if datasource.type in VALID_UNSTRUCTURED_DATA_TYPES:
         await vectorize(
             datasource=datasource,
@@ -101,6 +107,7 @@ async def vectorize_datasource(
 
 @flow(name="revalidate_datasource", description="Revalidate datasources", retries=0)
 async def revalidate_datasource(agent_id: str):
+    print("apps>datasource>flow.py>revalidate_datasource","line 110")
     agent_datasources = await prisma.agentdatasource.find_many(
         where={"agentId": agent_id}, include={"datasource": True}
     )
@@ -111,6 +118,7 @@ async def revalidate_datasource(agent_id: str):
 async def delete_datasource(
     datasource_id: str, options: Optional[dict], vector_db_provider: Optional[str]
 ) -> None:
+    print("apps>datasource>flow.py>delete_datasource","line 121")
     await handle_delete_datasource(
         datasource_id=datasource_id,
         options=options,
