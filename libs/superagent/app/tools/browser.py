@@ -12,6 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class LCBrowser(LCBaseTool):
+    print("apps>memory>browser.py>LCBrowser","line 15")
     name = "Browser"
     description = (
         "a portal to the internet. Use this when you need to "
@@ -65,10 +66,12 @@ class LCBrowser(LCBaseTool):
 
 
 class BrowserArgs(BaseModel):
+    print("apps>tools>browser.py>BrowserArgs","line 69")
     url: str = Field(..., description="A valid url including protocol to analyze")
 
 
 class Browser(BaseTool):
+    print("apps>tools>browser.py>Browser","line 74")
     args_schema = BrowserArgs
 
     async def arun(self, args: BrowserArgs) -> dict:
