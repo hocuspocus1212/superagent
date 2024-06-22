@@ -6,6 +6,7 @@ from tavily import TavilyClient
 
 
 class Tavily(BaseTool):
+    print("apps>tools>Tavily.py>Tavily","line 9")
     name = "PubMed® search"
     description = "useful for answering question about medical publications"
     return_direct = False
