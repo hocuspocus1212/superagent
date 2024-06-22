@@ -53,6 +53,7 @@ class VectorStoreMain(VectorStoreBase):
         self.instance = self.get_database()
 
     def get_database(self, index_name: Optional[str] = None) -> Any:
+        print("apps>vectorstores>base.py>get_database","line 56")
         vectorstore_classes = {
             "PINECONE": PineconeVectorStore,
             "ASTRA_DB": AstraVectorStore,
@@ -106,6 +107,7 @@ class VectorStoreMain(VectorStoreBase):
         namespace: str | None = None,
         min_score: float | None = None,  # new argument for minimum similarity score
     ):
+        print("apps>vectorstores>base.py>query","line 110")
         return self.instance.query(prompt, metadata_filter, top_k, namespace, min_score)
 
     def query_documents(
@@ -115,9 +117,11 @@ class VectorStoreMain(VectorStoreBase):
         top_k: int | None,
         query_type: Literal["document", "all"] = "document",
     ):
+        print("apps>vectorstores>base.py>query_documents","line 120")
         return self.instance.query_documents(prompt, datasource_id, top_k, query_type)
 
     def delete(self, datasource_id: str):
+        print("apps>vectorstores>base.py>delete","line 124")
         self.instance.delete(datasource_id)
 
     # @backoff.on_exception(backoff.expo, Exception, max_tries=3)
@@ -127,6 +131,7 @@ class VectorStoreMain(VectorStoreBase):
     def embed_documents(
         self, documents: list[Document], datasource_id: str, batch_size: int = 20
     ):
+        print("apps>vectorstores>base.py>embed_documents","line 134")
         newDocuments = [
             document.metadata.update({"datasource_id": datasource_id}) or document
             for document in documents
@@ -134,4 +139,5 @@ class VectorStoreMain(VectorStoreBase):
         self.instance.embed_documents(documents=newDocuments, batch_size=batch_size)
 
     def clear_cache(self, agent_id: str, datasource_id: str | None = None):
+        print("apps>vectorstores>base.py>clear_cache","line 142")
         self.instance.clear_cache(agent_id, datasource_id)
