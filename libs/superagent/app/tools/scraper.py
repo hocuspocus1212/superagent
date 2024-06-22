@@ -5,6 +5,7 @@ from scrapingbee import ScrapingBeeClient
 
 
 class Scraper(BaseTool):
+    print("apps>tools>scraper.py>Scraper","line 8")
     name = "Scraper"
     description = "useful for extracting content from a webpage"
     return_direct = False
