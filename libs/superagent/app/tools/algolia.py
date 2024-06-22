@@ -5,6 +5,7 @@ from langchain_community.tools import BaseTool
 
 
 class Algolia(BaseTool):
+    print("apps>tools>Algolia.py>Algolia","line 8")
     name = "Algolia"
     description = "Useful for querying an Agolia index"
     return_direct = False
