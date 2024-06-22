@@ -17,6 +17,7 @@ from langchain_openai import ChatOpenAI
 
 
 class DatasourceFinetuneTool(BaseTool):
+    print("apps>tools>datasource.py>DatasourceFinetuneTool","line 20")
     name = "datasource"
     description = "useful for when you need to answer questions"
     return_direct = False
@@ -65,6 +66,7 @@ class DatasourceFinetuneTool(BaseTool):
 
 
 class DatasourceTool(BaseTool):
+    print("apps>tools>datasource.py>DatasourceTool","line 69")
     name = "datasource"
     description = "useful for when you need to answer questions"
     return_direct = False
@@ -107,6 +109,7 @@ class DatasourceTool(BaseTool):
 
 
 class StructuredDatasourceTool(BaseTool):
+    print("apps>tools>datasource.py>StructuredDatasourceTool","line 112")
     name = "structured datasource"
     description = "useful for when need answer questions"
     return_direct = False
