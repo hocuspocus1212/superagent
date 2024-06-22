@@ -12,6 +12,7 @@ from prisma.models import LLM, Agent
 
 
 class LLMParams(BaseModel):
+    print("apps>agents>base.py>LLMParams","line 15")
     temperature: Optional[float] = 0.1
     max_tokens: Optional[int]
     aws_access_key_id: Optional[str] = None
@@ -20,12 +21,15 @@ class LLMParams(BaseModel):
 
 
 class LLMData(BaseModel):
+    print("apps>agents>base.py>LLMData","line 24")
     llm: LLM
     params: LLMParams
     model: str
 
 
 class AgentBase(ABC):
+    print("AgentBase","line 31")
+
     _input: str
     _messages: list = []
     prompt: Any
@@ -90,6 +94,8 @@ class AgentBase(ABC):
 
 
 class AgentFactory:
+    print("apps>agents>base.py>AgentFactory","line 97")
+
     def __init__(
         self,
         session_id: str = None,
@@ -105,7 +111,7 @@ class AgentFactory:
         self.callbacks = callbacks
         self.api_llm_params = llm_params
         self.agent_data = agent_data
-
+    
     @property
     def llm_data(self):
         llm = self.agent_data.llms[0].llm
