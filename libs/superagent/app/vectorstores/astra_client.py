@@ -53,6 +53,7 @@ class AstraClient:
         self.find_index()
 
     def create_index(self):
+        print("apps>vectorstores>astra_client.py>create_index","line 56")
         create_query = {
             "createCollection": {
                 "name": self.collection_name,
@@ -72,6 +73,7 @@ class AstraClient:
             raise Exception(parsed_content["errors"])
 
     def find_index(self):
+        print("apps>vectorstores>astra_client.py>find_index","line 76")
         find_query = {"findCollections": {"options": {"explain": True}}}
         resp = requests.request(
             "POST",
@@ -110,6 +112,7 @@ class AstraClient:
         include_metadata: Optional[bool] = None,
         include_values: Optional[bool] = None,
     ) -> QueryResponse:
+        print("apps>vectorstores>astra_client.py>query","line 115")
         """
         The Query operation searches a namespace, using a query vector.
         It retrieves the ids of the most similar items in a namespace, along with their similarity scores.
@@ -141,6 +144,7 @@ class AstraClient:
 
     # @staticmethod
     def _format_query_response(self, responses, include_metadata, include_values):
+        print("apps>vectorstores>astra_client.py>_format_query_response","line 147")
         final_res = []
         for response in responses:
             id = response.pop("_id")
@@ -157,6 +161,7 @@ class AstraClient:
         return QueryResponse(final_res)
 
     def _query(self, vector, top_k, filters=None):
+        print("apps>vectorstores>astra_client.py>_query","line 164")
         query = {
             "sort": {"$vector": vector},
             "options": {"limit": top_k, "includeSimilarity": True},
@@ -168,6 +173,7 @@ class AstraClient:
         return result
 
     def find_documents(self, find_query):
+        print("apps>vectorstores>astra_client.py>find_documents","line 176")
         query = json.dumps({"find": find_query})
         response = requests.request(
             "POST",
@@ -186,6 +192,7 @@ class AstraClient:
             print("[WARNING] No documents found", response_dict)
 
     def upsert(self, to_upsert):
+        print("apps>vectorstores>astra_client.py>upsert","line 195")
         to_insert = []
         upserted_ids = []
         not_upserted_ids = []
@@ -292,6 +299,7 @@ class AstraClient:
         _delete_all: Optional[bool] = None,
         filter: Optional[Dict[str, Union[str, float, int, bool, List, dict]]] = None,
     ) -> Dict[str, Any]:
+        print("apps>vectorstores>astra_client.py>delete","line 302")
         if ids is not None:
             query = {"deleteMany": {"filter": {"_id": {"$in": ids}}}}
         if filter is not None:
@@ -308,6 +316,7 @@ class AstraClient:
         return parsed_resp
 
     def describe_index_stats(self):
+        print("apps>vectorstores>astra_client.py>describe_index_stats","line 319")
         # get size of vectors in collection
         url = f"https://{self.astra_id}-{self.astra_region}.apps.astra.datastax.com/api/json/v1/{self.keyspace_name}"
         query = json.dumps({"findCollections": {"options": {"explain": True}}})
