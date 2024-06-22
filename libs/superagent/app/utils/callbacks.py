@@ -33,6 +33,7 @@ class CustomAsyncIteratorCallbackHandler(AsyncCallbackHandler):
         self.done = asyncio.Event()
 
     async def on_agent_finish(self, finish: AgentFinish, **_: Any) -> Any:
+        print("apps>utils>callbacks.py>on_agent_finish","line 36")
         """Run on agent end."""
         # This is for the tools whose return_direct property is set to True
         if not self.is_stream_started:
@@ -45,10 +46,12 @@ class CustomAsyncIteratorCallbackHandler(AsyncCallbackHandler):
         self.done.set()
 
     async def on_llm_start(self, *_: Any, **__: Any) -> None:
+        print("apps>utils>callbacks.py>on_llm_start","line 48")
         # If two calls are made in a row, this resets the state
         self.done.clear()
 
     async def on_llm_new_token(self, token: str, **kwargs: Any) -> None:  # noqa
+        print("apps>utils>callbacks.py>on_llm_new_token","line 52")
         if token is not None and token != "":
             has_put = False
             while not has_put:
@@ -59,6 +62,7 @@ class CustomAsyncIteratorCallbackHandler(AsyncCallbackHandler):
                     continue
 
     async def on_llm_end(self, response, **kwargs: Any) -> None:  # noqa
+        print("apps>utils>callbacks.py>on_llm_end","line 62")
         # TODO:
         # This should be removed when Langchain has merged
         # https://github.com/langchain-ai/langchain/pull/9536
@@ -68,9 +72,11 @@ class CustomAsyncIteratorCallbackHandler(AsyncCallbackHandler):
                     self.done.set()
 
     async def on_llm_error(self, *args: Any, **kwargs: Any) -> None:  # noqa
+        print("apps>utils>callbacks.py>on_llm_error","line 71")
         self.done.set()
 
     async def aiter(self) -> AsyncIterator[str]:
+        print("apps>utils>callbacks.py>aiter","line 74")
         while not self.queue.empty() or not self.done.is_set():
             done, pending = await asyncio.wait(
                 [
@@ -110,9 +116,11 @@ class CostCalcAsyncHandler(AsyncCallbackHandler):
         self.completion_tokens_cost_usd: float = 0.0
 
     def on_llm_start(self, _, prompts: List[str], **kwargs: Any) -> None:  # noqa
+        print("apps>utils>callbacks.py>on_llm_start","line 113")
         self.prompt = prompts[0]
 
     def on_llm_end(self, llm_result: LLMResult, **kwargs: Any) -> None:  # noqa
+        print("apps>utils>callbacks.py>on_llm_end","line 116")
         self.completion = llm_result.generations[0][0].message.content
         completion_tokens = self._calculate_tokens(self.completion)
         prompt_tokens = self._calculate_tokens(self.prompt)
@@ -128,11 +136,13 @@ class CostCalcAsyncHandler(AsyncCallbackHandler):
         self.completion_tokens_cost_usd = completion_tokens_cost_usd
 
     def _calculate_tokens(self, text: str) -> int:
+        print("apps>utils>callbacks.py>_calculate_tokens","line 131")
         return token_counter(model=self.model, text=text)
 
     def _calculate_cost_per_token(
         self, prompt_tokens: int, completion_tokens: int
     ) -> Tuple[float, float]:
+        print("apps>utils>callbacks.py>_calculate_cost_per_token","line 136")
         return cost_per_token(
             model=self.model,
             prompt_tokens=prompt_tokens,
@@ -146,6 +156,7 @@ def get_session_tracker_handler(
     session_id,
     user_id,
 ):
+    print("apps>utils>callbacks.py>get_session_tracker_handler","line 149")
     langfuse_secret_key = config("LANGFUSE_SECRET_KEY", "")
     langfuse_public_key = config("LANGFUSE_PUBLIC_KEY", "")
     langfuse_host = config("LANGFUSE_HOST", "https://cloud.langfuse.com")
