@@ -5,6 +5,7 @@ from openai import AsyncOpenAI, OpenAI
 
 
 class TTS1(BaseTool):
+    print("apps>tools>TTS_1.py>TTS1","line 8")
     name = "text-to-speech"
     description = "useful for generation voice audio from text"
     return_direct = False
