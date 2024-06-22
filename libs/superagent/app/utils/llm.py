@@ -43,6 +43,7 @@ LLM_PROVIDER_MAPPING = {
 
 
 def get_llm_provider(model: str):
+    print("apps>utils>helpers.py>get_llm_provider","line 46")
     _, provider, _, _ = litellm_get_llm_provider(model)
     provider = provider.upper()
 
